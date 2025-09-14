@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".", // relative to tsconfig.json
+    "jsx": "react-jsx",
+    "lib": ["DOM", "ESNext"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"]
+}
