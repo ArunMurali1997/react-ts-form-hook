@@ -1,35 +1,60 @@
-import { ChangeEvent, FormEvent, useState } from "react";
+import { FormEvent, useState } from "react";
 import { IUseFormProps, FormErrors, FormChangeEvent } from "../types/types";
 
 export function useForm<T>({
   initialValues,
+  initialErrors,
   validate,
   onSubmit,
 }: IUseFormProps<T>) {
+  const hasInitialErrors = initialErrors
+    ? Object.keys(initialErrors).length > 0
+    : false;
   const [values, setValues] = useState<T>(initialValues);
   const [errors, setErrors] = useState<FormErrors<T>>({});
-  const [isPristine, setIsPristine] = useState<boolean>(true);
-  const [isValid, setIsValid] = useState<boolean>(true);
+  const [isPristine, setIsPristine] = useState<boolean>(!hasInitialErrors);
+  const [isValid, setIsValid] = useState<boolean>(!hasInitialErrors);
+
+  const doValidate = async (form: T): Promise<boolean> => {
+    const validationResult: FormErrors<T> = (await validate?.(form)) ?? {};
+    setErrors(validationResult);
+
+    const valid: boolean = Object.keys(validationResult).length === 0;
+
+    setIsValid(valid);
+    return valid;
+  };
   function isCheckbox(el: EventTarget | null): el is HTMLInputElement {
     return el instanceof HTMLInputElement && el.type === "checkbox";
   }
   const handleChange = (e: FormChangeEvent) => {
-    const { name, value, type } = e.target;
+    const { name, value } = e.target;
     const newValue = isCheckbox(e.target) ? e.target.checked : value;
-    setValues((prev) => ({ ...prev, [name]: newValue }));
+    setValues((prev) => {
+      const updatedValues = { ...prev, [name]: newValue };
+      doValidate(updatedValues);
+      return updatedValues;
+    });
   };
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsPristine(false);
 
-    if (validate) {
-      const validationErrors = validate(values);
-      setErrors(validationErrors);
-      setIsValid(Object.keys(validationErrors).length === 0);
-      if (Object.keys(validationErrors).length === 0) {
-        onSubmit(values);
-      }
-    } else {
+  const updateValues = (updatedValues: T) => {
+    setValues((prev) => {
+      const newValues = {
+        ...prev,
+        ...updatedValues,
+      };
+      doValidate(newValues);
+      return newValues;
+    });
+  };
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (isPristine) {
+      setIsPristine(false);
+    }
+
+    if (await doValidate(values)) {
       onSubmit(values);
     }
   };
@@ -48,23 +73,31 @@ export function useForm<T>({
     };
   };
 
+  const setValidationErrors = (validationErrors: FormErrors<T>) => {
+    const newErrors = { ...errors, ...validationErrors };
+    setErrors(newErrors);
+    const valid: boolean = Object.keys(newErrors).length === 0;
+    setIsValid(valid);
+  };
+
   const resetForm = () => {
     setValues(initialValues);
     setErrors({});
-    setIsPristine(true);
-    setIsValid(true);
+    setIsValid(!hasInitialErrors);
+    setIsPristine(!hasInitialErrors);
   };
+
   return {
-    values,
-    errors,
     handleChange,
     handleSubmit,
+    setValidationErrors,
     bindError,
     bindInput,
     resetForm,
+    updateValues,
+    values,
+    errors,
     isPristine,
     isValid,
-    setErrors,
-    setValues,
   };
 }

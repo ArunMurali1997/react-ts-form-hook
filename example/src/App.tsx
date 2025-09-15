@@ -16,7 +16,7 @@ const App = () => {
         password: ""
     };
 
-    const { handleSubmit, bindInput, bindError } = useForm<LoginForm>({
+    const { handleSubmit, bindInput, bindError, isPristine } = useForm<LoginForm>({
         initialValues,
         onSubmit: (values) => {
             console.log("Form submitted:", values);
@@ -89,7 +89,7 @@ const App = () => {
                     <label htmlFor="rememberMe">Remember Me</label>
                 </div>
 
-                <button type="submit" className="btn-submit">Submit</button>
+                <button type="submit" className="btn-submit" disabled={isPristine}>Submit</button>
 
             </div>
         </form>

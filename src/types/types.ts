@@ -1,15 +1,17 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, FormEvent } from "react";
 
-export type ValidationFunction<T> = (
-  values: T
-) => Partial<Record<keyof T, string>>;
 // Represents error messages for a form of type T
 export type FormErrors<T> = Partial<Record<keyof T, string>>;
+export type SubmitHandler<T> = (values: T) => void;
+export type ValidationFunction<T> = (
+  values: T
+) => FormErrors<T> | Promise<FormErrors<T>>;
 
 export interface IUseFormProps<T> {
   initialValues: T;
+  initialErrors?: FormErrors<T>;
   validate?: ValidationFunction<T>;
-  onSubmit: (values: T) => void;
+  onSubmit: SubmitHandler<T>;
 }
 export type FormChangeEvent =
   | ChangeEvent<HTMLInputElement>
