@@ -1,7 +1,7 @@
 import { FormEvent, useReducer, useState } from "react";
 import { IUseFormProps, FormErrors, FormChangeEvent } from "../types/types";
 import { formReducer } from "../reducer/formReducer";
-import * as actions from "../reducer/formActions";
+import * as mutation from "../reducer/mutation";
 
 export function useForm<T>({
   initialValues,
@@ -28,10 +28,10 @@ export function useForm<T>({
 
   const doValidate = async (form: T): Promise<boolean> => {
     const validationResult: FormErrors<T> = (await validate?.(form)) ?? {};
-    dispatch(actions.setErrors(validationResult));
+    dispatch(mutation.setErrors(validationResult));
 
     const valid: boolean = Object.keys(validationResult).length === 0;
-    dispatch(actions.setValid(valid));
+    dispatch(mutation.setValid(valid));
     return valid;
   };
   function isCheckbox(el: EventTarget | null): el is HTMLInputElement {
@@ -44,21 +44,21 @@ export function useForm<T>({
     e.preventDefault();
     const { name, value } = e.target;
     const newValue = isCheckbox(e.target) ? e.target.checked : value;
-    dispatch(actions.updateValues({ [name]: newValue } as Partial<T>));
+    dispatch(mutation.updateValues({ [name]: newValue } as Partial<T>));
     if (doValidateCheck) {
       doValidate({ ...state.values, [name]: value });
     }
   };
 
   const updateValues = (updatedValues: T, doValidateCheck: boolean = true) => {
-    dispatch(actions.updateValues(updatedValues));
+    dispatch(mutation.updateValues(updatedValues));
     if (doValidateCheck) doValidate({ ...state.values, ...updatedValues });
   };
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.stopPropagation();
     e.preventDefault();
     if (state.isPristine) {
-      dispatch(actions.setPristine(false));
+      dispatch(mutation.setPristine(false));
     }
 
     if (await doValidate(state.values)) {
@@ -82,13 +82,15 @@ export function useForm<T>({
 
   const setValidationErrors = (validationErrors: FormErrors<T>) => {
     const newErrors = { ...state.errors, ...validationErrors };
-    dispatch(actions.setErrors(newErrors));
+    dispatch(mutation.setErrors(newErrors));
     const valid: boolean = Object.keys(newErrors).length === 0;
-    dispatch(actions.setValid(valid));
+    dispatch(mutation.setValid(valid));
   };
 
   const resetForm = () => {
-    dispatch(actions.resetForm(initialValues, initialErrors, hasInitialErrors));
+    dispatch(
+      mutation.resetForm(initialValues, initialErrors, hasInitialErrors)
+    );
   };
 
   return {
