@@ -16,23 +16,17 @@ const App = () => {
         password: ""
     };
 
-    const { handleSubmit, bindInput, bindError, isPristine } = useForm<LoginForm>({
+    const { handleSubmit, bindInput, isPristine, errors, isValid } = useForm<LoginForm>({
         initialValues,
         onSubmit: (values) => {
             console.log("Form submitted:", values);
         },
         validate: (values) => {
             const errors: FormErrors<LoginForm> = {
-                name: "Name is required.",
-                email: "Email is invalid.",
-                // remember field is optional and not validated with string error message here
-                password: "Password is required."
             };
 
             if (!values.name.trim()) {
                 errors.name = "Name is required.";
-            } else {
-                errors.name = ""
             }
 
             if (!values.email.trim()) {
@@ -40,15 +34,12 @@ const App = () => {
             } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
                 errors.email = "Email is invalid.";
             }
-            else {
-                errors.email = ""
-            }
 
             if (!values.password.trim()) {
                 errors.password = "Password is required.";
             } else if (values.password.length < 6) {
                 errors.password = "Password must be at least 6 characters.";
-            } else { errors.password = "" }
+            }
 
             return errors;
         }
@@ -62,25 +53,25 @@ const App = () => {
 
                 <div className="form-group">
                     <label htmlFor="name">Name</label>
-                    <input type="text" id="name" {...bindInput('name')} placeholder="Enter your name" />
-                    {bindError('name').errorMessage && (
-                        <small className="error">{bindError('name').errorMessage}</small>
+                    <input type="text"  {...bindInput('name', false)} placeholder="Enter your name" />
+                    {errors.name && (
+                        <small className="error">{errors.name}</small>
                     )}
                 </div>
 
                 <div className="form-group">
                     <label htmlFor="email">Email address</label>
-                    <input type="email" id="email" {...bindInput('email')} placeholder="Enter your email" />
-                    {bindError('email').errorMessage && (
-                        <small className="error">{bindError('email').errorMessage}</small>
+                    <input type="email" id="email" {...bindInput('email', false)} placeholder="Enter your email" />
+                    {errors.email && (
+                        <small className="error">{errors.email}</small>
                     )}
                 </div>
 
                 <div className="form-group">
                     <label htmlFor="password">Password</label>
-                    <input type="password" id="password" {...bindInput('password')} placeholder="Enter your password" />
-                    {bindError('password').errorMessage && (
-                        <small className="error">{bindError('password').errorMessage}</small>
+                    <input type="password" autoComplete="current-password" id="password" {...bindInput('password', false)} placeholder="Enter your password" />
+                    {errors.password && (
+                        <small className="error">{errors.password}</small>
                     )}
                 </div>
 
@@ -89,7 +80,7 @@ const App = () => {
                     <label htmlFor="rememberMe">Remember Me</label>
                 </div>
 
-                <button type="submit" className="btn-submit" disabled={isPristine}>Submit</button>
+                <button type="submit" className="btn-submit" disabled={!isValid && !isPristine}>Submit</button>
 
             </div>
         </form>

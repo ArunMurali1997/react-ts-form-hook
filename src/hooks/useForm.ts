@@ -1,90 +1,94 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useReducer, useState } from "react";
 import { IUseFormProps, FormErrors, FormChangeEvent } from "../types/types";
+import { formReducer } from "../reducer/formReducer";
+import * as actions from "../reducer/formActions";
 
 export function useForm<T>({
   initialValues,
-  initialErrors,
+  initialErrors = {},
   validate,
   onSubmit,
 }: IUseFormProps<T>) {
   const hasInitialErrors = initialErrors
     ? Object.keys(initialErrors).length > 0
     : false;
-  const [values, setValues] = useState<T>(initialValues);
-  const [errors, setErrors] = useState<FormErrors<T>>({});
-  const [isPristine, setIsPristine] = useState<boolean>(!hasInitialErrors);
-  const [isValid, setIsValid] = useState<boolean>(!hasInitialErrors);
+  const [state, dispatch] = useReducer(formReducer, {
+    initialValues,
+    initialErrors,
+    hasInitialErrors,
+    values: initialValues,
+    errors: initialErrors || {},
+    isPristine: !hasInitialErrors,
+    isValid: !hasInitialErrors,
+  });
+  // const [values, setValues] = useState<T>(initialValues);
+  // const [errors, setErrors] = useState<FormErrors<T>>({});
+  // const [isPristine, setIsPristine] = useState<boolean>(!hasInitialErrors);
+  // const [isValid, setIsValid] = useState<boolean>(!hasInitialErrors);
 
   const doValidate = async (form: T): Promise<boolean> => {
     const validationResult: FormErrors<T> = (await validate?.(form)) ?? {};
-    setErrors(validationResult);
+    dispatch(actions.setErrors(validationResult));
 
     const valid: boolean = Object.keys(validationResult).length === 0;
-
-    setIsValid(valid);
+    dispatch(actions.setValid(valid));
     return valid;
   };
   function isCheckbox(el: EventTarget | null): el is HTMLInputElement {
     return el instanceof HTMLInputElement && el.type === "checkbox";
   }
-  const handleChange = (e: FormChangeEvent) => {
+  const handleChange = (
+    e: FormChangeEvent,
+    doValidateCheck: boolean = true
+  ) => {
+    e.preventDefault();
     const { name, value } = e.target;
     const newValue = isCheckbox(e.target) ? e.target.checked : value;
-    setValues((prev) => {
-      const updatedValues = { ...prev, [name]: newValue };
-      doValidate(updatedValues);
-      return updatedValues;
-    });
+    dispatch(actions.updateValues({ [name]: newValue } as Partial<T>));
+    if (doValidateCheck) {
+      doValidate({ ...state.values, [name]: value });
+    }
   };
 
-  const updateValues = (updatedValues: T) => {
-    setValues((prev) => {
-      const newValues = {
-        ...prev,
-        ...updatedValues,
-      };
-      doValidate(newValues);
-      return newValues;
-    });
+  const updateValues = (updatedValues: T, doValidateCheck: boolean = true) => {
+    dispatch(actions.updateValues(updatedValues));
+    if (doValidateCheck) doValidate({ ...state.values, ...updatedValues });
   };
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.stopPropagation();
     e.preventDefault();
-    if (isPristine) {
-      setIsPristine(false);
+    if (state.isPristine) {
+      dispatch(actions.setPristine(false));
     }
 
-    if (await doValidate(values)) {
-      onSubmit(values);
+    if (await doValidate(state.values)) {
+      onSubmit(state.values);
     }
   };
 
-  const bindInput = (name: keyof T) => {
+  const bindInput = (name: keyof T, doValidateCheck?: boolean) => {
     return {
       name,
-      onChange: handleChange,
-      value: values[name] as unknown as string, // or adjust based on expected input types
+      onChange: (e: FormChangeEvent) => handleChange(e, doValidateCheck),
+      value: state.values[name] as unknown as string, // or adjust based on expected input types
     };
   };
 
   const bindError = (name: keyof T) => {
     return {
-      errorMessage: !isPristine && errors[name],
+      errorMessage: !state.isPristine && state.errors[name],
     };
   };
 
   const setValidationErrors = (validationErrors: FormErrors<T>) => {
-    const newErrors = { ...errors, ...validationErrors };
-    setErrors(newErrors);
+    const newErrors = { ...state.errors, ...validationErrors };
+    dispatch(actions.setErrors(newErrors));
     const valid: boolean = Object.keys(newErrors).length === 0;
-    setIsValid(valid);
+    dispatch(actions.setValid(valid));
   };
 
   const resetForm = () => {
-    setValues(initialValues);
-    setErrors({});
-    setIsValid(!hasInitialErrors);
-    setIsPristine(!hasInitialErrors);
+    dispatch(actions.resetForm(initialValues, initialErrors, hasInitialErrors));
   };
 
   return {
@@ -95,9 +99,9 @@ export function useForm<T>({
     bindInput,
     resetForm,
     updateValues,
-    values,
-    errors,
-    isPristine,
-    isValid,
+    values: state.values,
+    errors: state.errors,
+    isPristine: state.isPristine,
+    isValid: state.isValid,
   };
 }
