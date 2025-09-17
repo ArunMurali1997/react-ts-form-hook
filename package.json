@@ -1,6 +1,6 @@
 {
   "name": "react-ts-form-hook",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A reusable React hook for form handling with validation in TypeScript",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -26,6 +26,7 @@
   ],
   "author": "Arun Murali",
   "license": "MIT",
+  "homepage": "https://arunmurali1997.github.io/react-ts-form-hoo/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ArunMurali1997/react-ts-form-hook.git"
