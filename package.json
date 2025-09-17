@@ -12,7 +12,8 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "tsc",
-    "start:example": "pnpm --filter example start"
+    "start:example": "pnpm --filter example start",
+    "publish": "pnpm publish --access public --no-git-checks"
   },
   "keywords": [
     "react",
