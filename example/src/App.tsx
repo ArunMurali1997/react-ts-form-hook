@@ -53,7 +53,8 @@ const App = () => {
 
                 <div className="form-group">
                     <label htmlFor="name">Name</label>
-                    <input type="text"  {...bindInput('name', false)} placeholder="Enter your name" />
+                    <input type="text" autoComplete="name"
+                        {...bindInput('name', false)} placeholder="Enter your name" />
                     {errors.name && (
                         <small className="error">{errors.name}</small>
                     )}
@@ -61,7 +62,7 @@ const App = () => {
 
                 <div className="form-group">
                     <label htmlFor="email">Email address</label>
-                    <input type="email" id="email" {...bindInput('email', false)} placeholder="Enter your email" />
+                    <input type="text" id="email" autoComplete="email" {...bindInput('email', false)} placeholder="Enter your email" />
                     {errors.email && (
                         <small className="error">{errors.email}</small>
                     )}
@@ -76,11 +77,11 @@ const App = () => {
                 </div>
 
                 <div className="form-group">
-                    <input type="checkbox" id="rememberMe" {...bindInput('remember', false)} />
+                    <input type="checkbox" autoComplete="off" id="rememberMe" {...bindInput('remember', false)} />
                     <label htmlFor="rememberMe">Remember Me</label>
                 </div>
 
-                <button type="submit" className="btn-submit" disabled={!isValid && !isPristine}>Submit</button>
+                <button type="submit" className="btn-submit" >Submit</button>
 
             </div>
         </form>
