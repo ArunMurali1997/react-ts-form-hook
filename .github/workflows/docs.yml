@@ -21,7 +21,7 @@ jobs:
         run: npm install -g pnpm
 
       - name: Install dependencies
-        run: pnpm  --filter -w install
+        run: pnpm install --filter . --ignore-scripts
 
 
       - name: Test
