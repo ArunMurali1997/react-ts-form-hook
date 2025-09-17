@@ -41,12 +41,11 @@ export function useForm<T>({
     e: FormChangeEvent,
     doValidateCheck: boolean = true
   ) => {
-    e.preventDefault();
     const { name, value } = e.target;
     const newValue = isCheckbox(e.target) ? e.target.checked : value;
     dispatch(mutation.updateValues({ [name]: newValue } as Partial<T>));
     if (doValidateCheck) {
-      doValidate({ ...state.values, [name]: value });
+      doValidate({ ...state.values, [name]: newValue });
     }
   };
 
@@ -70,7 +69,11 @@ export function useForm<T>({
     return {
       name,
       onChange: (e: FormChangeEvent) => handleChange(e, doValidateCheck),
-      value: state.values[name] as unknown as string, // or adjust based on expected input types
+      value: state.values[name],
+      checked:
+        typeof state.values[name] === "boolean"
+          ? state.values[name]
+          : undefined,
     };
   };
 
