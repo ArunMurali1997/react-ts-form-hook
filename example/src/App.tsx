@@ -76,7 +76,7 @@ const App = () => {
                 </div>
 
                 <div className="form-group">
-                    <input type="checkbox" id="rememberMe" {...bindInput('remember')} />
+                    <input type="checkbox" id="rememberMe" {...bindInput('remember', false)} />
                     <label htmlFor="rememberMe">Remember Me</label>
                 </div>
 
