@@ -17,18 +17,17 @@ jobs:
         with:
           node-version: 22
 
-      - name: pnpm install
+      - name: Install pnpm
         run: npm install -g pnpm
 
       - name: Install dependencies
         run: pnpm install
 
       - name: Build TypeDoc docs
-        run: pnpm run docs  # Make sure "typedoc --out docs src" is your build command
+        run: pnpm run docs
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs
-
