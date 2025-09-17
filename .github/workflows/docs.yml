@@ -3,33 +3,36 @@ name: Deploy Docs
 on:
   push:
     branches:
-      - main
+      - main   # change if your default branch is different
 
 jobs:
-  deploy:
+  deploy-docs:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./
 
     steps:
+      # 1️⃣ Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # 2️⃣ Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 22
 
+      # 3️⃣ Install pnpm
       - name: Install pnpm
         run: npm install -g pnpm
 
+      # 4️⃣ Install dependencies
       - name: Install dependencies
         run: pnpm install
 
+      # 5️⃣ Generate docs
       - name: Build TypeDoc docs
-        run: pnpm run docs
+        run: pnpm run docs   # Make sure "typedoc --options typedoc.json" is in your package.json scripts
 
+      # 6️⃣ Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
