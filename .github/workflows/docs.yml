@@ -6,24 +6,25 @@ on:
       - main
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 22
-          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build docs
-        run: pnpm run docs
+      - name: Build TypeDoc docs
+        run: pnpm run docs  # Make sure "typedoc --out docs src" is your build command
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v6
+        uses: peaceiris/actions-gh-pages@v5
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs
