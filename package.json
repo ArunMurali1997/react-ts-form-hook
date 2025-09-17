@@ -14,9 +14,19 @@
     "build": "tsc",
     "start:example": "pnpm --filter example start"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "react",
+    "typescript",
+    "form",
+    "hook",
+    "validation"
+  ],
+  "author": "Arun Murali",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArunMurali1997/react-ts-form-hook.git"
+  },
   "packageManager": "pnpm@10.16.1",
   "peerDependencies": {
     "react": "^19.1.1",
