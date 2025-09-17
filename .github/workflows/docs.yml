@@ -1,56 +1,39 @@
-name: Build and Deploy Docs
+name: Deploy Docs
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
 
 jobs:
-  deploy-docs:
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-
     steps:
-      # Step 1: Checkout the repository
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Clone repository
+        uses: actions/checkout@v2
 
-      # Step 2: Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 22
 
-      # Step 3: Install pnpm
       - name: Install pnpm
         run: npm install -g pnpm
 
-      # Step 4: Install dependencies
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm  install
 
-      # Step 5: Build TypeDoc documentation
-      - name: Build TypeDoc docs
+      - name: Test
+        run: pnpm run test
+        env:
+          CI: true
+
+      - name: Generate docs
         run: pnpm run docs
 
-      # Step 6: Upload the docs folder as artifact
-      - name: Upload docs artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./docs
-
-      # Step 7: Deploy docs to GitHub Pages
       - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+
