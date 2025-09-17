@@ -17,6 +17,9 @@ jobs:
         with:
           node-version: 22
 
+      - name: pnpm install
+        run: npm install -g pnpm
+
       - name: Install dependencies
         run: pnpm install
 
