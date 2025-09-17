@@ -1,0 +1,11 @@
+{
+  "entryPoints": ["src", "example"], // adjust if your main file is elsewhere
+  "out": "docs",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeExternals": true,
+  "exclude": ["**/__tests__/**", "**/*.test.tsx"],
+  "tsconfig": "tsconfig.json",
+  "theme": "default"
+}

@@ -1,0 +1,13 @@
+image: node:22
+
+pages:
+  stage: deploy
+  script:
+    - pnpm install
+    - pnpm run docs
+    - cp -r docs/ public/
+  artifacts:
+    paths:
+      - public
+  only:
+    - main  # or 'master' depending on your default branch
