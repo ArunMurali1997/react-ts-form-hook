@@ -1,6 +1,6 @@
 {
   "name": "react-ts-form-hook",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A reusable React hook for form handling with validation in TypeScript",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
