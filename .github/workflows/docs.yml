@@ -39,7 +39,7 @@ jobs:
         run: pnpm --version
 
       - name: Install dependencies
-        run: pnpm install  .
+        run: pnpm install  -w
 
       - name: Run tests
         run: pnpm run test
