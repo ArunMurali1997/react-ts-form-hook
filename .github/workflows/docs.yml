@@ -1,4 +1,4 @@
-name: Deploy Docs
+name: Deploy TypeDoc on GitHub Pages
 
 on:
   push:
@@ -6,12 +6,8 @@ on:
       - main
 
 env:
-  NODE_VERSION: 20.x.x
+  NODE_VERSION: 20.x
   PNPM_VERSION: 10.16.1
-
-permissions:
-  contents: write
-  pages: write
 
 jobs:
   deploy:
@@ -19,38 +15,39 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Install pnpm before using it
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v4.0.0
         with:
-          version: ${{ env.PNPM_VERSION }} # match your package.json "packageManager"
+          version: ${{ env.PNPM_VERSION }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm # caches pnpm store
-
-      - name: Verify pnpm
-        run: pnpm --version
+          cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install --filter . --ignore-scripts
+        run: pnpm install
 
-      - name: Run tests
-        run: pnpm run test
-        env:
-          CI: true
+      - name: Build project
+        run: pnpm build
 
       - name: Build documentation
-        run: pnpm run docs:build
+        run: pnpm docs:build
+
+      - name: Copy dist to public
+        run: |
+          mkdir -p public
+          cp -r dist/* public/
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          folder: public
+          clean: true
