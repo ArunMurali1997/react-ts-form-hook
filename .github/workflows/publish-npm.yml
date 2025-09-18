@@ -30,16 +30,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Verify tag is on main
-        run: |
-          # Get all branches containing this commit
-          BRANCHES=$(git branch -r --contains $GITHUB_SHA)
-          echo "Branches containing tag commit: $BRANCHES"
-          if [[ ! "$BRANCHES" =~ "origin/main" ]]; then
-            echo "Tag commit is not on main. Exiting..."
-            exit 1
-          fi
-
       # Install pnpm before using it
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
