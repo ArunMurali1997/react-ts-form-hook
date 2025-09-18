@@ -1,6 +1,6 @@
 {
   "name": "react-ts-form-hook",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "Areusable React hook for form handling with validation in TypeScript",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -13,7 +13,6 @@
     "prebuild": "rimraf dist",
     "build": "tsc",
     "start:example": "pnpm --filter example start",
-    "publish": "pnpm publish --access public --no-git-checks",
     "test": "jest",
     "docs:build": "typedoc",
     "docs:deploy": "gh-pages -d docs"
