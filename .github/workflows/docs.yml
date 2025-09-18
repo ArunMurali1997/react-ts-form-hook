@@ -49,10 +49,10 @@ jobs:
       - name: Build documentation
         run: pnpm run docs:build
 
-      - name: Copy dist to public
+      - name: Copy docs to public
         run: |
           mkdir -p public
-          cp -r dist/* public/
+          cp -r docs/* public/
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
