@@ -49,15 +49,17 @@ jobs:
       - name: Build documentation
         run: pnpm run docs:build
 
-      - name: Copy docs to public
+      # 8️⃣ Ensure <base> tag in index.html
+      - name: Add base href
         run: |
-          mkdir -p public
-          cp -r docs/* public/
+          if ! grep -q '<base href="./">' docs/index.html; then
+            sed -i 's|<head>|<head><base href="./">|' docs/index.html
+          fi
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages
-          folder: public
+          folder: docs
           clean: true
