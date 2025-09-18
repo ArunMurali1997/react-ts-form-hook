@@ -39,13 +39,6 @@ jobs:
         env:
           CI: true
 
-      - name: Build
-        uses: erikyo/tsdoc-action@v1
-        with:
-          source_dir: ./src/*
-          output_dir: ./docs
-          front_page: README.md
-
       - name: Deploy to GitHub pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
