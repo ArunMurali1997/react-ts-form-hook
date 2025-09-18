@@ -1,0 +1,68 @@
+name: Deploy Docs
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+env:
+  NODE_VERSION: 20.x.x
+  PNPM_VERSION: 10.16.1
+
+permissions:
+  contents: write
+  pages: write
+
+jobs:
+  deploy:
+    concurrency:
+      group: publish-${{ github.ref_name }}
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify tag is on main
+        run: |
+          # Get all branches containing this commit
+          BRANCHES=$(git branch -r --contains $GITHUB_SHA)
+          echo "Branches containing tag commit: $BRANCHES"
+          if [[ ! "$BRANCHES" =~ "origin/main" ]]; then
+            echo "Tag commit is not on main. Exiting..."
+            exit 1
+          fi
+
+      # Install pnpm before using it
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }} # match your package.json "packageManager"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm # caches pnpm store
+
+      - name: Verify pnpm
+        run: pnpm --version
+
+      - name: Authenticate npm
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+      - name: Install dependencies
+        run: pnpm install  -w
+
+      - name: Run tests
+        run: pnpm run test
+        env:
+          CI: true
+
+      - name: Build package
+        run: pnpm run build
+
+      - name: Publish Package
+        run: pnpm run publish
