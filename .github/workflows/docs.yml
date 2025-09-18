@@ -39,35 +39,15 @@ jobs:
         env:
           CI: true
 
-      - name: Generate docs
-        run: pnpm run docs
+      - name: Build
+        uses: erikyo/tsdoc-action@v1
+        with:
+          source_dir: ./src/*
+          output_dir: ./docs
+          front_page: README.md
 
-      # 8️⃣ Deploy docs to gh-pages branch
-      - name: Deploy docs to gh-pages
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -e
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-
-          # Clone the gh-pages branch (or create it if it doesn't exist)
-          if git ls-remote --exit-code --heads origin gh-pages; then
-            git clone --branch=gh-pages https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git gh-pages
-          else
-            git clone https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git gh-pages
-            cd gh-pages
-            git checkout --orphan gh-pages
-            cd ..
-          fi
-
-          # Clear old files
-          rm -rf gh-pages/*
-
-          # Copy docs folder into gh-pages root
-          cp -r docs/* gh-pages/
-
-          cd gh-pages
-          git add .
-          git commit -m "Deploy docs from GitHub Actions" || echo "No changes to commit"
-          git push origin gh-pages --force
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
