@@ -15,7 +15,7 @@
     "start:example": "pnpm --filter example start",
     "publish": "pnpm publish --access public --no-git-checks",
     "test": "jest",
-    "docs": "typedoc --options typedoc.json"
+    "docs": "typedoc --options typedoc.json --readme none"
   },
   "keywords": [
     "react",
