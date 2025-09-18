@@ -20,12 +20,12 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.16.1 # match your package.json "packageManager"
+          version: ${{ vars.PNPM_VERSION }} # match your package.json "packageManager"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ vars.NODE_VERSION }}
           cache: pnpm # caches pnpm store
 
       - name: Verify pnpm
@@ -46,8 +46,10 @@ jobs:
           output_dir: ./docs
           front_page: README.md
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Deploy to GitHub pages
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          folder: docs
+          clean: true
