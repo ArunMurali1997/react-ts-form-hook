@@ -32,7 +32,7 @@ jobs:
         run: pnpm --version
 
       - name: Install dependencies
-        run: pnpm install --ignore-scripts
+        run: pnpm install --filter . --ignore-scripts
 
       - name: Run tests
         run: pnpm run test
