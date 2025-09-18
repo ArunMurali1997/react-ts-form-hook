@@ -1,9 +1,14 @@
 name: Deploy Docs
 
 on:
-  push:
-    tags:
-      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish (optional)"
+        required: false
+      tag:
+        description: "Tag to publish (optional)"
+        required: false
 
 env:
   NODE_VERSION: 20.x.x
@@ -16,7 +21,7 @@ permissions:
 jobs:
   deploy:
     concurrency:
-      group: publish-${{ github.ref_name }}
+      group: manual-publish
       cancel-in-progress: true
     runs-on: ubuntu-latest
     permissions:
