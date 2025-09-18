@@ -25,7 +25,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.16.1 # match your packageManager version
+          version: 10.16.1 # 👈 match your package.json packageManager
 
       - name: Install dependencies
         run: pnpm install --ignore-scripts
