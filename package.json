@@ -15,7 +15,8 @@
     "start:example": "pnpm --filter example start",
     "publish": "pnpm publish --access public --no-git-checks",
     "test": "jest",
-    "docs": "typedoc --options typedoc.json"
+    "docs:build": "typedoc",
+    "docs:deploy": "gh-pages -d docs"
   },
   "keywords": [
     "react",

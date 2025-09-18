@@ -46,13 +46,11 @@ jobs:
         env:
           CI: true
 
-      - name: Build documentation
-        run: pnpm run docs
+      - run: Build documentation
+      - run: pnpm docs:build
 
-      - name: Deploy to GitHub pages
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages
-          folder: docs
-          clean: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
