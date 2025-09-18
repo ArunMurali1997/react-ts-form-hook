@@ -39,22 +39,20 @@ jobs:
         run: pnpm --version
 
       - name: Install dependencies
-        run: pnpm install --filter .
+        run: pnpm install  .
 
       - name: Run tests
         run: pnpm run test
         env:
           CI: true
 
-      - name: Copy dist to public
-        run: |
-          mkdir -p public
-          cp -r dist/* public/
+      - name: Build documentation
+        run: pnpm run docs:build
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy to GitHub pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages
-          folder: public
+          folder: docs
           clean: true
