@@ -46,7 +46,7 @@ jobs:
         env:
           CI: true
 
-      - run: Build Documentation
+      - run: pnpm install
       - run: pnpm run docs:build
 
       - name: Deploy to GitHub Pages
