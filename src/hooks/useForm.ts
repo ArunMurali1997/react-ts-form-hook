@@ -1,4 +1,4 @@
-import { FormEvent, useReducer } from "react";
+import { FormEvent, useCallback, useReducer } from "react";
 import { IUseFormProps, FormErrors, FormChangeEvent } from "../types/types";
 import { formReducer } from "../reducer/formReducer";
 import * as mutation from "../reducer/mutation";
@@ -110,32 +110,38 @@ export function useForm<T>({
    * @param {keyof T} name - Key of the field in form values.
    * @param {boolean} [doValidateCheck] - Whether to validate on change.
    */
-  const bindInput = (name: keyof T, doValidateCheck?: boolean) => {
-    const value = state.values[name];
+  const bindInput = useCallback(
+    (name: keyof T, doValidateCheck?: boolean) => {
+      const value = state.values[name];
 
-    if (typeof value === "boolean") {
+      if (typeof value === "boolean") {
+        return {
+          name,
+          checked: value,
+          onChange: (e: FormChangeEvent) => handleChange(e, doValidateCheck),
+        };
+      }
+
       return {
         name,
-        checked: value,
+        value: value as string | number,
         onChange: (e: FormChangeEvent) => handleChange(e, doValidateCheck),
       };
-    }
-
-    return {
-      name,
-      value: value as string | number,
-      onChange: (e: FormChangeEvent) => handleChange(e, doValidateCheck),
-    };
-  };
+    },
+    [state.values]
+  );
 
   /**
    * Binds error message for a field
    * @param {keyof T} name - Key of the field in form values.
    * @returns {object} Error object
    */
-  const bindError = (name: keyof T) => ({
-    errorMessage: !state.isPristine ? state.errors[name] : undefined,
-  });
+  const bindError = useCallback(
+    (name: keyof T) => ({
+      errorMessage: !state.isPristine ? state.errors[name] : undefined,
+    }),
+    [state.errors, state.isPristine]
+  );
 
   /**
    * Set validation errors programmatically
