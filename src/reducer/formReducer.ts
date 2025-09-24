@@ -6,26 +6,28 @@ export function formReducer<T>(
   action: FormAction<T>
 ): FormState<T> {
   switch (action.type) {
-    case Types.UPDATE_VALUES:
+    case Types.SET_VALUES:
       return {
         ...state,
         values: { ...state.values, ...action.payload.data },
       };
 
-    case Types.SET_ERRORS:
+    case Types.SET_ERRORS: {
+      const errors = { ...state.errors, ...action.payload.errors };
       return {
         ...state,
-        errors: action.payload.errors,
-        isValid: Object.keys(action.payload).length === 0,
+        errors: errors,
+        isValid: Object.keys(errors).length === 0,
       };
-
+    }
     case Types.RESET_FORM:
       return {
         ...state,
-        values: action.payload.initialValues,
-        errors: action.payload.initialErrors,
-        isPristine: !action.payload.hasInitialErrors,
-        isValid: !action.payload.hasInitialErrors,
+        values: state.initialValues,
+        errors: state.initialErrors,
+        isPristine: !state.hasInitialErrors,
+        isValid: !state.hasInitialErrors,
+        version: state.version + 1,
       };
 
     case Types.SET_PRISTINE:
@@ -38,6 +40,11 @@ export function formReducer<T>(
       return {
         ...state,
         isValid: action.payload.isValid,
+      };
+    case Types.FORCE_UPDATE:
+      return {
+        ...state,
+        version: state.version + 1,
       };
 
     default:

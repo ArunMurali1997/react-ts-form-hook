@@ -17,3 +17,7 @@ export type FormChangeEvent =
   | ChangeEvent<HTMLInputElement>
   | ChangeEvent<HTMLTextAreaElement>
   | ChangeEvent<HTMLSelectElement>;
+
+export interface HandleChangeOptions<T> {
+  doValidateCheck?: boolean;
+}

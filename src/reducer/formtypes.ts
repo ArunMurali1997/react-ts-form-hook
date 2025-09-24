@@ -1,3 +1,4 @@
+import { version } from "react";
 import { FormErrors } from "../types/types";
 import { Types } from "./mutation";
 export interface FormState<T> {
@@ -8,21 +9,18 @@ export interface FormState<T> {
   errors: FormErrors<T>;
   isPristine: boolean;
   isValid: boolean;
+  version: number;
 }
 
 export type FormAction<T> =
   | {
-      type: typeof Types.UPDATE_VALUES;
+      type: typeof Types.SET_VALUES;
       payload: { data: Partial<T>; doValidateCheck?: boolean };
     }
   | { type: typeof Types.SET_ERRORS; payload: { errors: FormErrors<T> } }
   | {
       type: typeof Types.RESET_FORM;
-      payload: {
-        initialValues: T;
-        initialErrors: FormErrors<T>;
-        hasInitialErrors: boolean;
-      };
     }
   | { type: typeof Types.SET_PRISTINE; payload: { isPristine: boolean } }
-  | { type: typeof Types.SET_VALID; payload: { isValid: boolean } };
+  | { type: typeof Types.SET_VALID; payload: { isValid: boolean } }
+  | { type: typeof Types.FORCE_UPDATE };
